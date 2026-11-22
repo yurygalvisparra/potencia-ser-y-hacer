@@ -1,0 +1,3068 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis Fortalezas</title>
+  <style>
+    /* =========================================================================
+       VARIABLES Y ESTILOS BASE (AZUL OSCURO PROFUNDO + NEÓN DE ALTO CONTRASTE)
+       ========================================================================= */
+    :root {
+      --bg-deep: #060b19;
+      --bg-mid: #0a1128;
+      --bg-card-front: #0d1633;
+      --bg-card-back: #080f24;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --neon-cyan: #00f5d4;
+      --neon-magenta: #ff007f;
+      --neon-yellow: #fee440;
+      --neon-green: #00ff87;
+      --neon-orange: #ff6b00;
+      --neon-violet: #b5179e;
+      --border-subtle: rgba(148, 163, 184, 0.16);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-deep);
+      background-image:
+        radial-gradient(circle at 12% 10%, rgba(0, 245, 212, 0.09) 0%, transparent 38%),
+        radial-gradient(circle at 88% 18%, rgba(181, 23, 158, 0.12) 0%, transparent 42%),
+        radial-gradient(circle at 50% 90%, rgba(255, 0, 127, 0.08) 0%, transparent 48%),
+        linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-mid) 50%, var(--bg-deep) 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* Cuadrícula técnica ambiental */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-size: 40px 40px;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* =========================================================================
+       CABECERA Y TABLERO DE PRIORIDADES PERSISTENTE
+       ========================================================================= */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6, 11, 25, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(0, 245, 212, 0.22);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    }
+
+    .header-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--neon-cyan), var(--neon-violet), var(--neon-magenta));
+      padding: 2px;
+      box-shadow: 0 0 18px rgba(0, 245, 212, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-logo-inner {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-deep);
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--neon-cyan);
+    }
+
+    .brand-title {
+      font-size: 1.55rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--neon-cyan), #38bdf8, var(--neon-magenta));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    .brand-subtitle {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Panel de 4 ranuras + Botón Engranajes */
+    .priority-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      background: rgba(10, 17, 40, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 8px 10px;
+      border-radius: 16px;
+    }
+
+    .slots-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .slot-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 11px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      transition: all 0.25s ease;
+    }
+
+    .slot-pill.empty-f {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px dashed rgba(148, 163, 184, 0.35);
+      color: #64748b;
+    }
+
+    .slot-pill.filled-f {
+      background: rgba(0, 255, 135, 0.13);
+      border: 1px solid rgba(0, 255, 135, 0.65);
+      color: #ecfdf5;
+      box-shadow: 0 0 12px rgba(0, 255, 135, 0.2);
+    }
+
+    .slot-pill.empty-m {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px dashed rgba(255, 0, 127, 0.45);
+      color: #9d4edd;
+    }
+
+    .slot-pill.filled-m {
+      background: rgba(255, 0, 127, 0.16);
+      border: 1px solid rgba(255, 0, 127, 0.75);
+      color: #fff1f2;
+      box-shadow: 0 0 14px rgba(255, 0, 127, 0.25);
+    }
+
+    .slot-badge-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      font-weight: 800;
+      background: #1e293b;
+      color: #94a3b8;
+      flex-shrink: 0;
+    }
+
+    .filled-f .slot-badge-num {
+      background: var(--neon-green);
+      color: #041014;
+    }
+
+    .filled-m .slot-badge-num {
+      background: var(--neon-magenta);
+      color: #ffffff;
+    }
+
+    .slot-text {
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slot-remove {
+      background: none;
+      border: none;
+      color: inherit;
+      opacity: 0.75;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0 2px;
+      line-height: 1;
+    }
+
+    .slot-remove:hover {
+      opacity: 1;
+      transform: scale(1.15);
+    }
+
+    .btn-gears-trigger {
+      padding: 9px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 245, 212, 0.4);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--neon-cyan);
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.25s ease;
+    }
+
+    .btn-gears-trigger.ready {
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green), var(--neon-yellow));
+      color: #040914;
+      border: none;
+      box-shadow: 0 0 22px rgba(0, 245, 212, 0.45);
+    }
+
+    .btn-gears-trigger:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+    }
+
+    /* =========================================================================
+       CONTENEDOR PRINCIPAL Y BARRA DE FILTROS
+       ========================================================================= */
+    .main-container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    .control-panel {
+      background: rgba(10, 17, 40, 0.82);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    .control-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .name-input-box {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      min-width: 240px;
+      flex: 1;
+      max-width: 320px;
+    }
+
+    .name-input-box label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: var(--neon-cyan);
+    }
+
+    .input-field {
+      background: rgba(6, 11, 25, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: var(--text-main);
+      padding: 9px 13px;
+      border-radius: 11px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+
+    .input-field:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.15);
+    }
+
+    .guide-banner {
+      flex: 2;
+      min-width: 280px;
+      background: rgba(6, 11, 25, 0.72);
+      border: 1px solid rgba(0, 245, 212, 0.18);
+      border-radius: 13px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+    }
+
+    .guide-banner strong.c-cyan { color: var(--neon-cyan); }
+    .guide-banner strong.c-green { color: var(--neon-green); }
+    .guide-banner strong.c-pink { color: var(--neon-magenta); }
+
+    .control-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      padding: 9px 13px;
+      border-radius: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.85);
+      color: #e2e8f0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--neon-cyan);
+      color: var(--neon-cyan);
+    }
+
+    .btn-danger-soft {
+      border-color: rgba(255, 0, 127, 0.35);
+      color: #fda4af;
+    }
+
+    .btn-danger-soft:hover {
+      border-color: var(--neon-magenta);
+      background: rgba(255, 0, 127, 0.15);
+      color: #ffffff;
+    }
+
+    .control-bottom {
+      padding-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filter-tab {
+      padding: 8px 14px;
+      border-radius: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(6, 11, 25, 0.85);
+      color: #cbd5e1;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-tab:hover {
+      border-color: var(--neon-cyan);
+      color: #ffffff;
+    }
+
+    .filter-tab.active {
+      background: var(--neon-cyan);
+      color: #040914;
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 16px rgba(0, 245, 212, 0.38);
+    }
+
+    .search-box {
+      position: relative;
+      min-width: 240px;
+      max-width: 320px;
+      flex: 1;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-box input {
+      padding-left: 34px;
+    }
+
+    .stats-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 0 4px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .stats-strip span.highlight {
+      color: var(--neon-cyan);
+      font-weight: 700;
+    }
+
+    /* =========================================================================
+       CUADRÍCULA DE 72 CARTAS Y EFECTO FLIP 3D GENEROSO
+       ========================================================================= */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    @media (max-width: 1120px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card-scene {
+      perspective: 1400px;
+      height: 455px;
+    }
+
+    @media (max-width: 420px) {
+      .card-scene {
+        height: 485px;
+      }
+    }
+
+    .card-flipper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+      transform-style: preserve-3d;
+    }
+
+    .card-flipper.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--card-accent, #00f5d4);
+      box-shadow: 0 10px 28px -8px var(--card-glow, rgba(0, 245, 212, 0.25));
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Cara Frontal */
+    .card-front {
+      background:
+        radial-gradient(circle at 90% 10%, var(--card-tint, rgba(0, 245, 212, 0.14)) 0%, transparent 52%),
+        linear-gradient(165deg, #101d42 0%, #091128 65%, #060b19 100%);
+      padding: 22px;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card-scene:hover .card-front {
+      box-shadow: 0 16px 36px -6px var(--card-glow, rgba(0, 245, 212, 0.42));
+    }
+
+    .card-top-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .cat-pill {
+      padding: 5px 10px;
+      border-radius: 9px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--card-tint, rgba(0, 245, 212, 0.14));
+      color: var(--card-accent, #00f5d4);
+      border: 1px solid var(--card-accent, #00f5d4);
+    }
+
+    .status-tag {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .status-tag.is-f {
+      background: var(--neon-green);
+      color: #041014;
+      box-shadow: 0 0 12px rgba(0, 255, 135, 0.6);
+    }
+
+    .status-tag.is-m {
+      background: var(--neon-magenta);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
+    }
+
+    .status-tag.is-eval {
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(0, 245, 212, 0.4);
+    }
+
+    .card-front-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card-title {
+      font-size: 1.42rem;
+      font-weight: 900;
+      line-height: 1.2;
+      color: var(--card-accent, #00f5d4);
+      text-shadow: 0 0 18px var(--card-glow, rgba(0, 245, 212, 0.3));
+      margin-bottom: 12px;
+    }
+
+    .card-def {
+      font-size: 0.92rem;
+      color: #e2e8f0;
+      line-height: 1.55;
+    }
+
+    .card-front-footer {
+      padding-top: 14px;
+      border-top: 1px solid rgba(148, 163, 184, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .flip-hint {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--card-accent, #00f5d4);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-expand-mini {
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      color: #cbd5e1;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-expand-mini:hover {
+      border-color: var(--card-accent);
+      color: #ffffff;
+    }
+
+    /* Cara Trasera (3 Preguntas interactivas + Sugerencia + Priorización) */
+    .card-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(180deg, #091229 0%, #050a18 100%);
+      padding: 15px 16px;
+    }
+
+    .back-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    }
+
+    .back-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--card-accent, #00f5d4);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .back-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .btn-flip-back {
+      padding: 4px 9px;
+      border-radius: 8px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #f8fafc;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-flip-back:hover {
+      border-color: var(--card-accent);
+    }
+
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin: 8px 0;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .question-item {
+      background: rgba(13, 22, 51, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      border-radius: 10px;
+      padding: 7px 9px;
+    }
+
+    .question-text {
+      font-size: 0.75rem;
+      color: #f1f5f9;
+      line-height: 1.32;
+      margin-bottom: 6px;
+    }
+
+    .question-num {
+      font-weight: 800;
+      color: var(--card-accent, #00f5d4);
+      margin-right: 3px;
+    }
+
+    .answer-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .ans-btn {
+      padding: 4px 6px;
+      border-radius: 7px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(6, 11, 25, 0.9);
+      color: #94a3b8;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .ans-btn:hover {
+      border-color: #cbd5e1;
+      color: #ffffff;
+    }
+
+    .ans-btn.sel-yes {
+      background: var(--neon-green);
+      color: #041014;
+      border-color: var(--neon-green);
+      box-shadow: 0 0 10px rgba(0, 255, 135, 0.4);
+    }
+
+    .ans-btn.sel-mid {
+      background: var(--neon-yellow);
+      color: #041014;
+      border-color: var(--neon-yellow);
+      box-shadow: 0 0 10px rgba(254, 228, 64, 0.4);
+    }
+
+    .ans-btn.sel-no {
+      background: var(--neon-magenta);
+      color: #ffffff;
+      border-color: var(--neon-magenta);
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+    }
+
+    .diag-bar {
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-align: center;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      color: #cbd5e1;
+      margin-bottom: 7px;
+    }
+
+    .diag-bar.diag-strong {
+      background: rgba(0, 255, 135, 0.14);
+      border-color: rgba(0, 255, 135, 0.5);
+      color: var(--neon-green);
+    }
+
+    .diag-bar.diag-mid {
+      background: rgba(254, 228, 64, 0.14);
+      border-color: rgba(254, 228, 64, 0.5);
+      color: var(--neon-yellow);
+    }
+
+    .diag-bar.diag-weak {
+      background: rgba(255, 0, 127, 0.16);
+      border-color: rgba(255, 0, 127, 0.55);
+      color: #ff70b8;
+    }
+
+    .priority-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .btn-prio {
+      padding: 7px 6px;
+      border-radius: 9px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      text-align: center;
+    }
+
+    .btn-prio-f {
+      background: rgba(0, 255, 135, 0.12);
+      border-color: rgba(0, 255, 135, 0.45);
+      color: var(--neon-green);
+    }
+
+    .btn-prio-f:hover {
+      background: rgba(0, 255, 135, 0.24);
+    }
+
+    .btn-prio-f.active {
+      background: var(--neon-green);
+      color: #041014;
+      box-shadow: 0 0 14px rgba(0, 255, 135, 0.45);
+    }
+
+    .btn-prio-m {
+      background: rgba(255, 0, 127, 0.14);
+      border-color: rgba(255, 0, 127, 0.5);
+      color: #ff70b8;
+    }
+
+    .btn-prio-m:hover {
+      background: rgba(255, 0, 127, 0.26);
+    }
+
+    .btn-prio-m.active {
+      background: var(--neon-magenta);
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(255, 0, 127, 0.45);
+    }
+
+    /* =========================================================================
+       SECCIÓN DEDICADA: MI MAPA DE ENGRANAJES (CANVAS + CONTROLES + PNG)
+       ========================================================================= */
+    .gears-section {
+      margin-top: 46px;
+      background: linear-gradient(160deg, rgba(10, 17, 40, 0.94), rgba(6, 11, 25, 0.98));
+      border: 2px solid rgba(0, 245, 212, 0.35);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 0 50px rgba(0, 245, 212, 0.12);
+    }
+
+    .gears-section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .gears-section-title {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gears-section-title span {
+      color: var(--neon-cyan);
+    }
+
+    .gears-section-sub {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .gears-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-download-png {
+      padding: 11px 20px;
+      border-radius: 13px;
+      border: none;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-green));
+      color: #040914;
+      font-weight: 900;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 24px rgba(0, 245, 212, 0.45);
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .btn-download-png:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.07);
+    }
+
+    .gears-workspace {
+      display: grid;
+      grid-template-columns: 3fr 1.15fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .gears-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-frame {
+      background: #040814;
+      border: 1px solid rgba(0, 245, 212, 0.25);
+      border-radius: 18px;
+      padding: 10px;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7);
+    }
+
+    canvas#gears-canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .gears-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .sidebar-card {
+      background: rgba(6, 11, 25, 0.88);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 16px;
+      padding: 15px;
+    }
+
+    .sidebar-card h4 {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--neon-cyan);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .sidebar-card p {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: rgba(13, 22, 51, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      margin-bottom: 7px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .order-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #040914;
+      font-size: 0.7rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .order-btns {
+      display: flex;
+      gap: 4px;
+    }
+
+    .order-btns button {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #f8fafc;
+      border-radius: 6px;
+      padding: 2px 7px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .order-btns button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* =========================================================================
+       MODAL DE VISTA AMPLIADA DE CARTA
+       ========================================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(3, 6, 16, 0.86);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-card-box {
+      width: 100%;
+      max-width: 560px;
+      background: #091229;
+      border: 2px solid var(--neon-cyan);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 0 45px rgba(0, 245, 212, 0.25);
+      position: relative;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    /* =========================================================================
+       NOTIFICACIONES TOAST
+       ========================================================================= */
+    .toast-stack {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 350px;
+      pointer-events: none;
+    }
+
+    .toast-msg {
+      pointer-events: auto;
+      background: rgba(10, 17, 40, 0.96);
+      border: 1px solid var(--neon-cyan);
+      color: #f8fafc;
+      padding: 12px 15px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55);
+      animation: slideInToast 0.25s ease forwards;
+    }
+
+    @keyframes slideInToast {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================================================
+       PIE DE PÁGINA INSTITUCIONAL
+       ========================================================================= */
+    .institutional-footer {
+      margin-top: 44px;
+      padding: 22px 20px;
+      background: rgba(6, 11, 25, 0.92);
+      border-top: 1px solid rgba(0, 245, 212, 0.25);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.45);
+      text-align: center;
+    }
+
+    .footer-badge {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: rgba(13, 22, 51, 0.85);
+      border: 1px solid rgba(0, 245, 212, 0.32);
+      box-shadow: 0 0 20px rgba(0, 245, 212, 0.12);
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      letter-spacing: 0.01em;
+    }
+
+    .footer-badge strong {
+      color: var(--neon-cyan);
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- CABECERA PERSISTENTE CON TABLERO DE PRIORIDADES -->
+    <header class="sticky-header">
+      <div class="header-container">
+        <div class="brand-group">
+          <div class="brand-logo" aria-hidden="true">
+            <div class="brand-logo-inner">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <h1 class="brand-title">Mis Fortalezas</h1>
+            <p class="brand-subtitle">72 Competencias (36 del Ser + 36 Laborales) • Autodescubrimiento & Coaching</p>
+          </div>
+        </div>
+
+        <!-- 4 Ranuras de Priorización + Botón ir al Mapa de Engranajes -->
+        <div class="priority-bar">
+          <div class="slots-cluster" id="header-slots">
+            <!-- Renderizado dinámicamente -->
+          </div>
+          <button type="button" id="btn-jump-gears" class="btn-gears-trigger" onclick="scrollToGearsSection()">
+            <span>⚙ Generar Sistema de Engranajes</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-container">
+
+      <!-- PANEL DE CONTROL, NOMBRE Y FILTROS -->
+      <section class="control-panel">
+        <div class="control-top">
+          <div class="name-input-box">
+            <label for="participant-name">Nombre del participante (para tu PNG)</label>
+            <input type="text" id="participant-name" class="input-field" placeholder="Escribe tu nombre aquí..." maxlength="42" />
+          </div>
+
+          <div class="guide-banner">
+            <strong class="c-cyan">¿Cómo jugar?</strong> Haz clic en cualquier carta para voltearla en 3D y responder sus <strong>3 preguntas</strong>. Puedes explorar todas las cartas que desees; al final <strong>tú decides</strong> tus <strong class="c-green">3 Fortalezas Impulsoras</strong> y tu <strong class="c-pink">1 Oportunidad de Mejora</strong> para activar el sistema de engranajes.
+          </div>
+
+          <div class="control-actions">
+            <button type="button" class="btn-secondary btn-danger-soft" onclick="resetAll()">↺ Reiniciar todo</button>
+          </div>
+        </div>
+
+        <div class="control-bottom">
+          <div class="filter-tabs" id="filter-tabs">
+            <button type="button" class="filter-tab active" data-filter="ALL" onclick="setFilter('ALL')">Todas (72)</button>
+            <button type="button" class="filter-tab" data-filter="Ser" onclick="setFilter('Ser')">✨ Del Ser (36)</button>
+            <button type="button" class="filter-tab" data-filter="Laboral" onclick="setFilter('Laboral')">🚀 Laborales (36)</button>
+            <button type="button" class="filter-tab" data-filter="EVALUATED" onclick="setFilter('EVALUATED')">✓ Evaluadas</button>
+            <button type="button" class="filter-tab" data-filter="SELECTED" onclick="setFilter('SELECTED')">★ Priorizadas (4)</button>
+          </div>
+
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="search-input" class="input-field" placeholder="Buscar competencia o habilidad..." oninput="renderCardsGrid()" />
+          </div>
+        </div>
+      </section>
+
+      <!-- INDICADOR DE PROGRESO -->
+      <div class="stats-strip">
+        <div id="grid-count-label">Mostrando 72 de 72 competencias</div>
+        <div>Cartas evaluadas: <span class="highlight" id="evaluated-count-label">0 / 72</span></div>
+      </div>
+
+      <!-- CUADRÍCULA DE LAS 72 CARTAS -->
+      <section class="cards-grid" id="cards-grid" aria-label="Baraja de 72 competencias"></section>
+
+      <!-- SECCIÓN DEDICADA: MI MAPA DE ENGRANAJES Y EXPORTACIÓN PNG -->
+      <section class="gears-section" id="gears-section">
+        <div class="gears-section-header">
+          <div>
+            <h2 class="gears-section-title"><span>⚙</span> Mi Mapa de Engranajes</h2>
+            <p class="gears-section-sub">Tus 3 fortalezas giran e impulsan tu oportunidad de mejora. Descarga tu resultado en alta resolución.</p>
+          </div>
+          <div class="gears-toolbar">
+            <button type="button" class="btn-secondary" id="btn-toggle-rotation" onclick="toggleGearsRotation()">⏸ Pausar giro</button>
+            <button type="button" class="btn-download-png" onclick="downloadGearsPNG()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Descargar Imagen PNG</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="gears-workspace">
+          <div class="canvas-frame">
+            <canvas id="gears-canvas" width="1200" height="800"></canvas>
+          </div>
+
+          <aside class="gears-sidebar">
+            <div class="sidebar-card">
+              <h4>Fortalezas Impulsoras (3)</h4>
+              <p>Reordena la prioridad de tus 3 engranajes motores o quita alguno para elegir otro de la baraja:</p>
+              <div id="sidebar-strengths-list"></div>
+            </div>
+
+            <div class="sidebar-card" style="border-color: rgba(255, 0, 127, 0.4);">
+              <h4 style="color: var(--neon-magenta);">Tuerca de Mejora (1)</h4>
+              <p>Competencia que recibirá la energía y el apalancamiento de tus fortalezas:</p>
+              <div id="sidebar-improvement-box"></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- PIE DE PÁGINA INSTITUCIONAL -->
+    <footer class="institutional-footer">
+      <div class="footer-badge">
+        <span>Elaborado por: <strong>Yury Marcela Galvis Parra.</strong> SENA Regional Santander. Centro de Servicios Empresariales y Turísticos.</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODAL PARA VISTA AMPLIADA DE CARTA -->
+  <script>
+    // =========================================================================
+    // PALETA NEÓN VIBRANTE DE ALTO CONTRASTE
+    // =========================================================================
+    const NEON_PALETTE = [
+      { hex: '#00f5d4', glow: 'rgba(0, 245, 212, 0.35)',  tint: 'rgba(0, 245, 212, 0.14)' },  // Cian neón
+      { hex: '#ff007f', glow: 'rgba(255, 0, 127, 0.35)',  tint: 'rgba(255, 0, 127, 0.14)' },  // Magenta neón
+      { hex: '#fee440', glow: 'rgba(254, 228, 64, 0.35)', tint: 'rgba(254, 228, 64, 0.14)' }, // Amarillo eléctrico
+      { hex: '#00ff87', glow: 'rgba(0, 255, 135, 0.35)',  tint: 'rgba(0, 255, 135, 0.14)' },  // Verde neón
+      { hex: '#ff6b00', glow: 'rgba(255, 107, 0, 0.35)',  tint: 'rgba(255, 107, 0, 0.15)' },  // Naranja neón
+      { hex: '#e040fb', glow: 'rgba(224, 64, 251, 0.35)', tint: 'rgba(224, 64, 251, 0.15)' }  // Violeta eléctrico
+    ];
+
+    // =========================================================================
+    // CATÁLOGO COMPLETO DE 72 COMPETENCIAS (36 DEL SER + 36 LABORALES)
+    // Basado en diccionarios de Martha Alles y dinámicas de Coaching Play
+    // =========================================================================
+    const COMPETENCIAS_DATA = [
+      // ----------------- 36 COMPETENCIAS DEL SER (IDs 1 al 36) -----------------
+      {
+        id: 1,
+        nombre: "Autoconocimiento",
+        categoria: "Ser",
+        definicion: "Capacidad de reconocer con honestidad las propias emociones, valores, talentos y límites personales.",
+        preguntas: [
+          "¿Identifico con claridad qué emociones estoy sintiendo en momentos de alta presión?",
+          "¿Reconozco mis talentos naturales sin caer en la arrogancia ni en la falsa modestia?",
+          "¿Acepto mis puntos ciegos cuando alguien de confianza me brinda retroalimentación?"
+        ]
+      },
+      {
+        id: 2,
+        nombre: "Inteligencia Emocional",
+        categoria: "Ser",
+        definicion: "Habilidad para comprender, regular y canalizar las emociones propias y sintonizar con las de los demás.",
+        preguntas: [
+          "¿Logro mantener la calma y pensar con claridad antes de reaccionar ante una provocación?",
+          "¿Percibo fácilmente el estado de ánimo de las personas con las que interactúo?",
+          "¿Transformo emociones difíciles como la frustración en acciones constructivas?"
+        ]
+      },
+      {
+        id: 3,
+        nombre: "Resiliencia",
+        categoria: "Ser",
+        definicion: "Entereza para sobreponerse a la adversidad, aprender de las crisis y salir fortalecido de los cambios.",
+        preguntas: [
+          "¿Me recupero con rapidez después de enfrentar un tropiezo o un resultado inesperado?",
+          "¿Encuentro aprendizajes valiosos incluso en las situaciones más difíciles de mi vida?",
+          "¿Mantengo la esperanza y el impulso cuando el entorno se vuelve incierto?"
+        ]
+      },
+      {
+        id: 4,
+        nombre: "Empatía Genuina",
+        categoria: "Ser",
+        definicion: "Disposición auténtica para ponerse en el lugar del otro, comprender su perspectiva y validar su sentir.",
+        preguntas: [
+          "¿Escucho sin juzgar cuando alguien me comparte un problema personal o laboral?",
+          "¿Intento comprender las razones detrás de la conducta de los demás antes de criticar?",
+          "¿Las personas suelen sentirse comprendidas y seguras cuando conversan conmigo?"
+        ]
+      },
+      {
+        id: 5,
+        nombre: "Integridad y Ética",
+        categoria: "Ser",
+        definicion: "Coherencia firme entre lo que se piensa, se dice y se hace, actuando siempre con rectitud y transparencia.",
+        preguntas: [
+          "¿Actúo de acuerdo con mis principios incluso cuando nadie me está observando?",
+          "¿Cumplo mis promesas y compromisos aunque hacerlo me implique un esfuerzo extra?",
+          "¿Me niego a tomar atajos que comprometan la honestidad o la justicia?"
+        ]
+      },
+      {
+        id: 6,
+        nombre: "Adaptabilidad al Cambio",
+        categoria: "Ser",
+        definicion: "Versatilidad mental y emocional para ajustarse con fluidez a nuevos escenarios, personas y desafíos.",
+        preguntas: [
+          "¿Veo los cambios repentinos como oportunidades de aprendizaje más que como amenazas?",
+          "¿Modifico mi forma de hacer las cosas con agilidad cuando las circunstancias lo exigen?",
+          "¿Me siento cómodo saliendo de mi zona de confort para probar enfoques distintos?"
+        ]
+      },
+      {
+        id: 7,
+        nombre: "Autocontrol y Serenidad",
+        categoria: "Ser",
+        definicion: "Dominio propio para gestionar impulsos, mantener la templanza y transmitir paz en momentos críticos.",
+        preguntas: [
+          "¿Evito decir palabras hirientes o tomar decisiones impulsivas cuando estoy molesto?",
+          "¿Mis compañeros o familiares me perciben como una persona serena en medio del caos?",
+          "¿Practico pausas conscientes cuando siento que el estrés empieza a desbordarme?"
+        ]
+      },
+      {
+        id: 8,
+        nombre: "Escucha Activa",
+        categoria: "Ser",
+        definicion: "Atención plena, presente y libre de distracciones para captar el mensaje verbal y no verbal del otro.",
+        preguntas: [
+          "¿Dejo de lado el celular y mis propios pensamientos para atender realmente a quien me habla?",
+          "¿Hago preguntas para asegurarme de haber entendido bien antes de dar mi opinión?",
+          "¿Evito interrumpir a los demás mientras expresan sus ideas?"
+        ]
+      },
+      {
+        id: 9,
+        nombre: "Optimismo Realista",
+        categoria: "Ser",
+        definicion: "Actitud positiva fundamentada en la confianza y la acción, enfocada en soluciones sin negar la realidad.",
+        preguntas: [
+          "¿Ante un obstáculo, enfoco mi energía en buscar soluciones en lugar de quejarme?",
+          "¿Contagio entusiasmo y confianza a las personas que me rodean?",
+          "¿Reconozco los riesgos reales de una situación sin perder la fe en que podemos superarlos?"
+        ]
+      },
+      {
+        id: 10,
+        nombre: "Humildad y Apertura",
+        categoria: "Ser",
+        definicion: "Reconocimiento sencillo del propio valor y disposición permanente para aprender de cualquier persona.",
+        preguntas: [
+          "¿Admito abiertamente cuando me equivoco o cuando no sé algo?",
+          "¿Valoro las ideas de los demás sin importar su cargo, edad o experiencia?",
+          "¿Recibo los elogios con gratitud sin sentirme superior a los demás?"
+        ]
+      },
+      {
+        id: 11,
+        nombre: "Autoconfianza",
+        categoria: "Ser",
+        definicion: "Convicción serena en las propias capacidades para afrontar retos y tomar decisiones con seguridad.",
+        preguntas: [
+          "¿Confío en mi criterio al momento de asumir responsabilidades nuevas o complejas?",
+          "¿Expreso mis ideas con firmeza incluso frente a personas con mucha autoridad?",
+          "¿Evito que el miedo al qué dirán paralice mis proyectos personales?"
+        ]
+      },
+      {
+        id: 12,
+        nombre: "Curiosidad Intelectual",
+        categoria: "Ser",
+        definicion: "Deseo constante de explorar, formular preguntas profundas y descubrir nuevas formas de entender el mundo.",
+        preguntas: [
+          "¿Investigo por iniciativa propia temas nuevos que amplían mi visión del mundo?",
+          "¿Me cuestiono el porqué de las cosas en lugar de aceptar todo por costumbre?",
+          "¿Disfruto conversando con personas que tienen puntos de vista muy distintos al mío?"
+        ]
+      },
+      {
+        id: 13,
+        nombre: "Gratitud y Aprecio",
+        categoria: "Ser",
+        definicion: "Hábito consciente de valorar lo recibido, reconocer el aporte ajeno y celebrar los logros cotidianos.",
+        preguntas: [
+          "¿Expreso verbalmente o por escrito mi agradecimiento a quienes me apoyan?",
+          "¿Valoro los pequeños avances diarios sin esperar únicamente grandes acontecimientos?",
+          "¿Reconozco el mérito de otras personas cuando un proyecto sale bien?"
+        ]
+      },
+      {
+        id: 14,
+        nombre: "Paciencia y Tolerancia",
+        categoria: "Ser",
+        definicion: "Capacidad de respetar los ritmos propios y ajenos, aceptando la diversidad sin perder la cordialidad.",
+        preguntas: [
+          "¿Mantengo un trato amable con personas que aprenden o trabajan a un ritmo más lento?",
+          "¿Tolero la espera y los procesos largos sin mostrar irritación constante?",
+          "¿Convivo armoniosamente con personas cuyas creencias o estilos son opuestos a los míos?"
+        ]
+      },
+      {
+        id: 15,
+        nombre: "Perseverancia y Tenacidad",
+        categoria: "Ser",
+        definicion: "Firmeza inquebrantable para sostener el esfuerzo en el tiempo hasta alcanzar metas significativas.",
+        preguntas: [
+          "¿Continúo trabajando en mis metas importantes cuando desaparece la motivación inicial?",
+          "¿Supero el cansancio o la monotonía cuando un objetivo realmente vale la pena?",
+          "¿Termino lo que empiezo en lugar de dejar proyectos a mitad de camino?"
+        ]
+      },
+      {
+        id: 16,
+        nombre: "Valentía y Coraje",
+        categoria: "Ser",
+        definicion: "Determinación para actuar conforme a las convicciones a pesar del miedo, la incertidumbre o el riesgo.",
+        preguntas: [
+          "¿Defiendo lo que considero justo aunque implique asumir una postura impopular?",
+          "¿Me atrevo a tener conversaciones difíciles que son necesarias para crecer?",
+          "¿Tomo decisiones valientes cuando el silencio o la pasividad serían más cómodos?"
+        ]
+      },
+      {
+        id: 17,
+        nombre: "Generosidad y Servicio",
+        categoria: "Ser",
+        definicion: "Disposición desinteresada para compartir tiempo, conocimiento y apoyo en beneficio del bienestar ajeno.",
+        preguntas: [
+          "¿Comparto mis conocimientos y contactos sin temor a que otros brillen más que yo?",
+          "¿Ofrezco mi ayuda de manera proactiva cuando noto que alguien está sobrecargado?",
+          "¿Encuentro satisfacción genuina al contribuir al éxito de otras personas?"
+        ]
+      },
+      {
+        id: 18,
+        nombre: "Autodisciplina",
+        categoria: "Ser",
+        definicion: "Capacidad de gobernar los propios hábitos, impulsos y horarios para honrar los compromisos asumidos.",
+        preguntas: [
+          "¿Cumplo con mis rutinas y deberes sin necesidad de que alguien me supervise?",
+          "¿Postergo gratificaciones inmediatas para alcanzar objetivos de mayor valor?",
+          "¿Mantengo hábitos saludables de orden, descanso y enfoque en mi día a día?"
+        ]
+      },
+      {
+        id: 19,
+        nombre: "Sentido del Humor Positivo",
+        categoria: "Ser",
+        definicion: "Habilidad para encontrar ligereza, alegría y perspectiva sana sin recurrir a la burla ni al sarcasmo.",
+        preguntas: [
+          "¿Sé reírme de mis propios errores sin tomarme demasiado en serio?",
+          "¿Utilizo el humor sano para distender ambientes tensos de manera respetuosa?",
+          "¿Evito hacer chistes que puedan ridiculizar o hacer sentir mal a alguien?"
+        ]
+      },
+      {
+        id: 20,
+        nombre: "Prudencia y Discernimiento",
+        categoria: "Ser",
+        definicion: "Sensatez para evaluar consecuencias antes de hablar o actuar, cuidando la confidencialidad y el respeto.",
+        preguntas: [
+          "¿Pienso en el impacto de mis palabras antes de emitir un juicio o comentario?",
+          "¿Guardo con absoluta reserva la información confidencial que me confían?",
+          "¿Elijo el momento y el lugar adecuados para expresar críticas o desacuerdos?"
+        ]
+      },
+      {
+        id: 21,
+        nombre: "Automotivación",
+        categoria: "Ser",
+        definicion: "Fuerza interior que impulsa a dar lo mejor de sí mismo por propósito personal más que por premios externos.",
+        preguntas: [
+          "¿Encuentro razones internas para dar excelencia incluso en tareas rutinarias?",
+          "¿Me impulso a mí mismo cuando no recibo reconocimiento inmediato del entorno?",
+          "¿Conecto mis actividades diarias con un propósito de vida que me inspira?"
+        ]
+      },
+      {
+        id: 22,
+        nombre: "Apertura al Aprendizaje",
+        categoria: "Ser",
+        definicion: "Mentalidad de crecimiento que asume cada experiencia como una oportunidad para evolucionar y desaprender.",
+        preguntas: [
+          "¿Estoy dispuesto a desaprender métodos antiguos cuando descubro uno mejor?",
+          "¿Busco activamente libros, cursos o mentores para fortalecer mis habilidades?",
+          "¿Veo el error como información útil para mejorar y no como una etiqueta personal?"
+        ]
+      },
+      {
+        id: 23,
+        nombre: "Asertividad",
+        categoria: "Ser",
+        definicion: "Expresión clara, directa, honesta y respetuosa de ideas, necesidades y límites sin agresividad ni sumisión.",
+        preguntas: [
+          "¿Sé decir no con amabilidad y firmeza cuando una petición excede mis límites?",
+          "¿Expreso mi desacuerdo respetando la dignidad de la otra persona?",
+          "¿Pido lo que necesito de manera clara en lugar de esperar que los demás lo adivinen?"
+        ]
+      },
+      {
+        id: 24,
+        nombre: "Compromiso Personal",
+        categoria: "Ser",
+        definicion: "Entrega apasionada y sentido de pertenencia hacia las causas, vínculos y proyectos que se eligen.",
+        preguntas: [
+          "¿Me involucro de corazón en los proyectos en los que decido participar?",
+          "¿Asumo la responsabilidad de mis resultados sin buscar culpables externos?",
+          "¿Doy la milla extra cuando un equipo o familia cuenta conmigo?"
+        ]
+      },
+      {
+        id: 25,
+        nombre: "Sensibilidad Interpersonal",
+        categoria: "Ser",
+        definicion: "Percepción fina para captar sutilezas emocionales, necesidades no expresadas y dinámicas humanas.",
+        preguntas: [
+          "¿Noto rápidamente cuando alguien en un grupo se siente excluido o incómodo?",
+          "¿Adapto mi tono de comunicación según la sensibilidad de cada interlocutor?",
+          "¿Cuido los detalles humanos que hacen sentir valoradas a las personas?"
+        ]
+      },
+      {
+        id: 26,
+        nombre: "Autenticidad",
+        categoria: "Ser",
+        definicion: "Libertad interior para mostrarse tal como se es, sin máscaras sociales ni necesidad de aprobación constante.",
+        preguntas: [
+          "¿Me comporto con la misma esencia en distintos entornos sociales y laborales?",
+          "¿Expreso mis verdaderos valores aunque no coincidan con la moda del momento?",
+          "¿Me siento en paz siendo quien soy sin intentar imitar a otras personas?"
+        ]
+      },
+      {
+        id: 27,
+        nombre: "Equilibrio Vida y Bienestar",
+        categoria: "Ser",
+        definicion: "Sabiduría para armonizar las metas profesionales con la salud física, mental, familiar y espiritual.",
+        preguntas: [
+          "¿Protejo espacios de calidad para mi familia, descanso y bienestar personal?",
+          "¿Logro desconectarme mentalmente de las obligaciones laborales al terminar mi jornada?",
+          "¿Cuido mi energía física y emocional como base de mi rendimiento sostenible?"
+        ]
+      },
+      {
+        id: 28,
+        nombre: "Flexibilidad Mental",
+        categoria: "Ser",
+        definicion: "Agilidad cognitiva para contemplar múltiples ángulos de un problema y soltar posturas rígidas.",
+        preguntas: [
+          "¿Cambio de opinión con facilidad cuando me presentan argumentos sólidos y evidencia?",
+          "¿Evito caer en pensamientos extremos de todo o nada ante situaciones complejas?",
+          "¿Exploro al menos dos o tres alternativas distintas antes de cerrar una decisión?"
+        ]
+      },
+      {
+        id: 29,
+        nombre: "Temple bajo Presión",
+        categoria: "Ser",
+        definicion: "Estabilidad emocional y lucidez operativa para rendir con eficacia en entornos exigentes o urgentes.",
+        preguntas: [
+          "¿Mantengo la calidad de mi desempeño cuando se acercan plazos muy ajustados?",
+          "¿Evito contagiar pánico o ansiedad al equipo durante una emergencia?",
+          "¿Priorizo con claridad qué es lo más importante cuando todo parece urgente?"
+        ]
+      },
+      {
+        id: 30,
+        nombre: "Conciencia Social",
+        categoria: "Ser",
+        definicion: "Compromiso ético con el bienestar colectivo, la equidad, el respeto ambiental y el impacto comunitario.",
+        preguntas: [
+          "¿Considero el impacto social y ambiental de mis decisiones cotidianas?",
+          "¿Trato con exactamente el mismo respeto y calidez a todas las personas sin distinción?",
+          "¿Participo o apoyo iniciativas que buscan mejorar mi comunidad o entorno?"
+        ]
+      },
+      {
+        id: 31,
+        nombre: "Perdón y Reconciliación",
+        categoria: "Ser",
+        definicion: "Capacidad de soltar el resentimiento, sanar vínculos fracturados y avanzar con ligereza emocional.",
+        preguntas: [
+          "¿Suelto los rencores del pasado para evitar que afecten mi presente y mis relaciones?",
+          "¿Doy el primer paso para dialogar y sanar un malentendido con alguien cercano?",
+          "¿Distingo entre el error puntual de una persona y su valor como ser humano?"
+        ]
+      },
+      {
+        id: 32,
+        nombre: "Atención Plena (Presencia)",
+        categoria: "Ser",
+        definicion: "Conciencia plena en el aquí y el ahora, realizando cada acción con enfoque, calma y profundidad.",
+        preguntas: [
+          "¿Me concentro en una sola tarea a la vez en lugar de vivir disperso en mil pensamientos?",
+          "¿Disfruto plenamente el momento presente sin vivir atrapado en el pasado o el futuro?",
+          "¿Percibo mis señales corporales de cansancio o tensión a tiempo?"
+        ]
+      },
+      {
+        id: 33,
+        nombre: "Propósito y Trascendencia",
+        categoria: "Ser",
+        definicion: "Claridad sobre el sentido de la propia existencia y deseo de dejar una huella positiva duradera.",
+        preguntas: [
+          "¿Tengo claro qué legado humano deseo dejar en las personas que me rodean?",
+          "¿Mis decisiones importantes están alineadas con lo que realmente da sentido a mi vida?",
+          "¿Siento que mi trabajo diario contribuye a algo más grande que yo mismo?"
+        ]
+      },
+      {
+        id: 34,
+        nombre: "Vitalidad y Entusiasmo",
+        categoria: "Ser",
+        definicion: "Energía vital, dinamismo y pasión contagiosa que revitaliza los proyectos y ambientes de trabajo.",
+        preguntas: [
+          "¿Abordo mis jornadas con energía, iniciativa y buena disposición?",
+          "¿Mi actitud suele elevar el ánimo de los grupos en los que participo?",
+          "¿Busco actividades que recarguen mi entusiasmo y creatividad periódicamente?"
+        ]
+      },
+      {
+        id: 35,
+        nombre: "Autocrítica Constructiva",
+        categoria: "Ser",
+        definicion: "Capacidad de evaluar objetivamente el propio desempeño para mejorar sin caer en la culpa destructiva.",
+        preguntas: [
+          "¿Analizo mis propios errores con objetividad para diseñar mejoras concretas?",
+          "¿Evito castigarme emocionalmente cuando algo no sale perfecto a la primera?",
+          "¿Pido retroalimentación honesta sobre cómo puedo ser mejor persona o profesional?"
+        ]
+      },
+      {
+        id: 36,
+        nombre: "Hospitalidad y Calidez",
+        categoria: "Ser",
+        definicion: "Don de gentes para acoger, integrar y hacer sentir bienvenidas a las personas desde el primer contacto.",
+        preguntas: [
+          "¿Saludo con genuina cordialidad y hago sentir incluidos a quienes llegan nuevos?",
+          "¿Creo atmósferas de confianza donde las personas se sienten cómodas expresándose?",
+          "¿Muestro interés auténtico por el bienestar de quienes me rodean?"
+        ]
+      },
+
+      // -------------- 36 COMPETENCIAS LABORALES (IDs 37 al 72) ---------------
+      {
+        id: 37,
+        nombre: "Liderazgo Transformacional",
+        categoria: "Laboral",
+        definicion: "Capacidad de inspirar, movilizar y desarrollar el potencial de otros hacia una visión compartida.",
+        preguntas: [
+          "¿Inspiro a otros con mi ejemplo más que imponiendo autoridad jerárquica?",
+          "¿Ayudo a las personas de mi equipo a descubrir y potenciar sus propias fortalezas?",
+          "¿Logro alinear esfuerzos diversos alrededor de un propósito común motivador?"
+        ]
+      },
+      {
+        id: 38,
+        nombre: "Trabajo en Equipo",
+        categoria: "Laboral",
+        definicion: "Sinergia efectiva con otros, priorizando los objetivos colectivos sobre el protagonismo individual.",
+        preguntas: [
+          "¿Coopero activamente con otras áreas o compañeros aunque no sean mis funciones directas?",
+          "¿Celebro los logros del equipo como propios y respaldo al grupo en momentos difíciles?",
+          "¿Fomento un clima de confianza y respeto mutuo dentro de mis grupos de trabajo?"
+        ]
+      },
+      {
+        id: 39,
+        nombre: "Orientación a Resultados",
+        categoria: "Laboral",
+        definicion: "Enfoque decidido en cumplir y superar metas con eficiencia, calidad y sentido de urgencia.",
+        preguntas: [
+          "¿Mantengo el foco en los objetivos clave sin distraerme en actividades de bajo impacto?",
+          "¿Busco soluciones creativas cuando surgen obstáculos que amenazan una meta?",
+          "¿Mido mi avance con indicadores concretos para asegurar el cumplimiento oportuno?"
+        ]
+      },
+      {
+        id: 40,
+        nombre: "Pensamiento Estratégico",
+        categoria: "Laboral",
+        definicion: "Visión global y prospectiva para anticipar tendencias, conectar variables y diseñar ventajas sostenibles.",
+        preguntas: [
+          "¿Analizo cómo las decisiones de hoy impactarán los resultados a mediano y largo plazo?",
+          "¿Comprendo el panorama completo del negocio o proyecto más allá de mi tarea puntual?",
+          "¿Identifico oportunidades y riesgos futuros antes de que se vuelvan evidentes para todos?"
+        ]
+      },
+      {
+        id: 41,
+        nombre: "Comunicación Influyente",
+        categoria: "Laboral",
+        definicion: "Transmisión clara, estructurada y persuasiva de ideas que genera entendimiento y acción.",
+        preguntas: [
+          "¿Adapto mi mensaje según la audiencia para asegurar que sea claro y relevante?",
+          "¿Estructuro mis presentaciones o correos de manera concreta, directa y persuasiva?",
+          "¿Verifico que mi interlocutor haya comprendido exactamente el mensaje clave?"
+        ]
+      },
+      {
+        id: 42,
+        nombre: "Resolución de Problemas",
+        categoria: "Laboral",
+        definicion: "Habilidad analítica para diagnosticar causas raíz y diseñar soluciones prácticas y duraderas.",
+        preguntas: [
+          "¿Investigo la causa raíz de un problema en lugar de aplicar soluciones superficiales?",
+          "¿Descompongo situaciones complejas en partes manejables para resolverlas paso a paso?",
+          "¿Evalúo pros, contras y viabilidad antes de implementar una solución definitiva?"
+        ]
+      },
+      {
+        id: 43,
+        nombre: "Toma de Decisiones",
+        categoria: "Laboral",
+        definicion: "Criterio oportuno y responsable para elegir la mejor alternativa asumiendo sus consecuencias.",
+        preguntas: [
+          "¿Tomo decisiones oportunas sin caer en la parálisis por exceso de análisis?",
+          "¿Combino datos objetivos con buen criterio e intuición profesional al decidir?",
+          "¿Asumo plenamente la responsabilidad de los resultados de mis decisiones?"
+        ]
+      },
+      {
+        id: 44,
+        nombre: "Orientación al Cliente",
+        categoria: "Laboral",
+        definicion: "Vocación genuina por comprender, anticipar y superar las expectativas de clientes internos y externos.",
+        preguntas: [
+          "¿Escucho las necesidades reales del cliente antes de ofrecer una solución estándar?",
+          "¿Hago seguimiento hasta asegurar que el cliente quedó completamente satisfecho?",
+          "¿Trato a mis compañeros de otras áreas con la misma excelencia que a un cliente externo?"
+        ]
+      },
+      {
+        id: 45,
+        nombre: "Innovación y Creatividad",
+        categoria: "Laboral",
+        definicion: "Generación de ideas originales y mejoras disruptivas que agregan valor real a procesos o productos.",
+        preguntas: [
+          "¿Propongo con frecuencia formas nuevas y más eficientes de hacer el trabajo?",
+          "¿Cuestiono el siempre se ha hecho así para abrir espacio a la experimentación?",
+          "¿Convierto ideas creativas en prototipos o mejoras aplicables en la práctica?"
+        ]
+      },
+      {
+        id: 46,
+        nombre: "Planificación y Organización",
+        categoria: "Laboral",
+        definicion: "Estructuración metódica de recursos, prioridades, cronogramas y entregables para ejecutar con orden.",
+        preguntas: [
+          "¿Planifico mis semanas y proyectos estableciendo prioridades claras y plazos realistas?",
+          "¿Anticipo los recursos y apoyos necesarios antes de iniciar una tarea compleja?",
+          "¿Mantengo mis archivos, pendientes y espacios de trabajo organizados y accesibles?"
+        ]
+      },
+      {
+        id: 47,
+        nombre: "Negociación Ganar-Ganar",
+        categoria: "Laboral",
+        definicion: "Destreza para construir acuerdos sólidos donde ambas partes sienten satisfechos sus intereses clave.",
+        preguntas: [
+          "¿Busco soluciones creativas que beneficien a ambas partes en lugar de imponer mi postura?",
+          "¿Preparo mis argumentos y alternativas antes de entrar a una negociación importante?",
+          "¿Separo a las personas del problema para negociar con firmeza y cordialidad?"
+        ]
+      },
+      {
+        id: 48,
+        nombre: "Gestión del Tiempo",
+        categoria: "Laboral",
+        definicion: "Administración inteligente de la agenda enfocada en lo importante sobre lo meramente urgente.",
+        preguntas: [
+          "¿Distingo claramente entre tareas urgentes y tareas verdaderamente importantes?",
+          "¿Evito la procrastinación en actividades complejas o de alta concentración?",
+          "¿Cumplo puntualmente con mis entregas y reuniones sin vivir apagando incendios?"
+        ]
+      },
+      {
+        id: 49,
+        nombre: "Desarrollo de Personas",
+        categoria: "Laboral",
+        definicion: "Capacidad de mentorizar, retroalimentar y crear oportunidades de crecimiento para otros profesionales.",
+        preguntas: [
+          "¿Brindo retroalimentación específica, oportuna y constructiva para ayudar a otros a crecer?",
+          "¿Delego retos que permitan a mis compañeros desarrollar nuevas habilidades?",
+          "¿Dedico tiempo genuino a escuchar las aspiraciones profesionales de mi equipo?"
+        ]
+      },
+      {
+        id: 50,
+        nombre: "Pensamiento Analítico",
+        categoria: "Laboral",
+        definicion: "Rigor lógico para interpretar datos, detectar patrones, establecer relaciones causa-efecto y sustentar ideas.",
+        preguntas: [
+          "¿Baso mis diagnósticos y propuestas en datos verificables más que en suposiciones?",
+          "¿Detecto inconsistencias o tendencias ocultas al revisar informes o indicadores?",
+          "¿Organizo la información de manera lógica para facilitar la toma de decisiones?"
+        ]
+      },
+      {
+        id: 51,
+        nombre: "Iniciativa y Proactividad",
+        categoria: "Laboral",
+        definicion: "Anticipación autónoma para actuar antes de que surjan problemas o antes de recibir instrucciones.",
+        preguntas: [
+          "¿Identifico oportunidades de mejora y actúo sin esperar a que me lo pidan?",
+          "¿Me anticipo a posibles fallas implementando acciones preventivas a tiempo?",
+          "¿Propongo soluciones cada vez que reporto un inconveniente?"
+        ]
+      },
+      {
+        id: 52,
+        nombre: "Calidad y Mejora Continua",
+        categoria: "Laboral",
+        definicion: "Rigor profesional por la excelencia en los detalles y optimización permanente de los estándares.",
+        preguntas: [
+          "¿Reviso cuidadosamente mi trabajo para minimizar errores antes de entregarlo?",
+          "¿Busco constantemente perfeccionar los procesos bajo mi responsabilidad?",
+          "¿Mantengo altos estándares de calidad incluso cuando nadie los audita?"
+        ]
+      },
+      {
+        id: 53,
+        nombre: "Delegación y Empoderamiento",
+        categoria: "Laboral",
+        definicion: "Asignación clara de responsabilidades y autonomía, confiando en el criterio del equipo y dando seguimiento.",
+        preguntas: [
+          "¿Delego tareas con objetivos claros y autoridad suficiente sin caer en el control excesivo?",
+          "¿Confío en las capacidades de mi equipo cuando les asigno proyectos relevantes?",
+          "¿Realizo puntos de control oportunos para apoyar sin invadir la autonomía del otro?"
+        ]
+      },
+      {
+        id: 54,
+        nombre: "Gestión de Conflictos",
+        categoria: "Laboral",
+        definicion: "Intervención constructiva para mediar diferencias, desactivar tensiones y fortalecer acuerdos laborales.",
+        preguntas: [
+          "¿Abordo los desacuerdos directamente y a tiempo antes de que escalen en problemas mayores?",
+          "¿Escucho todas las versiones con imparcialidad cuando medio en un conflicto?",
+          "¿Logro transformar desacuerdos profesionales en acuerdos productivos?"
+        ]
+      },
+      {
+        id: 55,
+        nombre: "Agilidad Digital y Tecnológica",
+        categoria: "Laboral",
+        definicion: "Dominio y adopción rápida de herramientas digitales, datos e inteligencia artificial para potenciar el trabajo.",
+        preguntas: [
+          "¿Incorporo nuevas herramientas digitales o de IA para optimizar mi productividad?",
+          "¿Aprendo con rapidez el funcionamiento de nuevas plataformas o software laboral?",
+          "¿Ayudo a otros compañeros a adaptarse a los cambios tecnológicos?"
+        ]
+      },
+      {
+        id: 56,
+        nombre: "Visión de Negocio",
+        categoria: "Laboral",
+        definicion: "Comprensión integral de cómo la organización crea valor, genera rentabilidad y compite en su sector.",
+        preguntas: [
+          "¿Entiendo cómo mi rol diario impacta los ingresos, costos o sostenibilidad de la organización?",
+          "¿Me mantengo informado sobre las tendencias del mercado, clientes y competidores?",
+          "¿Evalúo el retorno y la eficiencia de recursos en cada proyecto que propongo?"
+        ]
+      },
+      {
+        id: 57,
+        nombre: "Accountability (Responsabilidad)",
+        categoria: "Laboral",
+        definicion: "Mentalidad de dueño que asume el compromiso total por los resultados propios y del equipo sin excusas.",
+        preguntas: [
+          "¿Asumo la propiedad total de mis metas sin culpar a factores externos cuando algo falla?",
+          "¿Cumplo lo que prometo en tiempo y forma generando alta confiabilidad?",
+          "¿Busco qué más puedo hacer yo para asegurar el éxito de un proyecto compartido?"
+        ]
+      },
+      {
+        id: 58,
+        nombre: "Construcción de Redes (Networking)",
+        categoria: "Laboral",
+        definicion: "Habilidad para cultivar relaciones profesionales de confianza y alianzas estratégicas dentro y fuera.",
+        preguntas: [
+          "¿Cultivo relaciones profesionales genuinas basadas en el apoyo mutuo y la confianza?",
+          "¿Conecto personas y áreas clave para destrabar proyectos o crear nuevas oportunidades?",
+          "¿Mantengo activa mi red de contactos profesionales más allá de cuando necesito un favor?"
+        ]
+      },
+      {
+        id: 59,
+        nombre: "Gestión de Proyectos",
+        categoria: "Laboral",
+        definicion: "Coordinación integral de alcance, tiempos, riesgos, presupuesto y equipos desde el inicio hasta el cierre.",
+        preguntas: [
+          "¿Defino con claridad entregables, responsables y fechas desde el arranque de un proyecto?",
+          "¿Identifico riesgos potenciales a tiempo y preparo planes de contingencia?",
+          "¿Realizo cierres formales documentando lecciones aprendidas para futuros proyectos?"
+        ]
+      },
+      {
+        id: 60,
+        nombre: "Pensamiento Crítico",
+        categoria: "Laboral",
+        definicion: "Evaluación objetiva y rigurosa de argumentos, fuentes y supuestos para evitar sesgos al decidir.",
+        preguntas: [
+          "¿Verifico la validez de las fuentes y datos antes de dar por cierta una afirmación?",
+          "¿Cuestiono mis propios sesgos y suposiciones al analizar un problema complejo?",
+          "¿Distingo con claridad entre hechos comprobados y opiniones subjetivas?"
+        ]
+      },
+      {
+        id: 61,
+        nombre: "Influencia y Persuasión",
+        categoria: "Laboral",
+        definicion: "Capacidad de generar adhesión voluntaria a ideas o proyectos mediante argumentos sólidos y credibilidad.",
+        preguntas: [
+          "¿Logro convencer a otros de adoptar nuevas ideas sin necesidad de imponerlas?",
+          "¿Presento los beneficios de mis propuestas conectándolos con los intereses de los demás?",
+          "¿Mi credibilidad profesional hace que las personas confíen en mis recomendaciones?"
+        ]
+      },
+      {
+        id: 62,
+        nombre: "Gestión del Cambio",
+        categoria: "Laboral",
+        definicion: "Facilitación efectiva de procesos de transformación, acompañando a las personas en la transición.",
+        preguntas: [
+          "¿Ayudo a mis compañeros a comprender el propósito y los beneficios de un cambio organizacional?",
+          "¿Escucho y valido las inquietudes de otros durante procesos de transición o reestructuración?",
+          "¿Actúo como agente promotor de nuevas formas de trabajo en lugar de resistirme?"
+        ]
+      },
+      {
+        id: 63,
+        nombre: "Conocimiento Técnico y Experiencia",
+        categoria: "Laboral",
+        definicion: "Dominio profundo de los saberes especializados del rol y actualización constante en el campo profesional.",
+        preguntas: [
+          "¿Soy referente de consulta técnica o profesional para mis compañeros de trabajo?",
+          "¿Actualizo continuamente mis conocimientos especializados para mantenerme vigente?",
+          "¿Traduzco conceptos técnicos complejos en explicaciones sencillas para otras áreas?"
+        ]
+      },
+      {
+        id: 64,
+        nombre: "Facilitación de Equipos",
+        categoria: "Laboral",
+        definicion: "Destreza para guiar reuniones, talleres y conversaciones colectivas hacia acuerdos participativos.",
+        preguntas: [
+          "¿Conduzco reuniones productivas con agenda clara, participación equilibrada y acuerdos concretos?",
+          "¿Logro que las personas más introvertidas también aporten sus ideas en grupo?",
+          "¿Mantengo el enfoque de las discusiones evitando desviaciones improductivas?"
+        ]
+      },
+      {
+        id: 65,
+        nombre: "Seguridad y Prevención",
+        categoria: "Laboral",
+        definicion: "Cultura preventiva para proteger la integridad física, psicológica y digital de las personas y activos.",
+        preguntas: [
+          "¿Cumplo rigurosamente los protocolos de seguridad y cuidado sin tomar riesgos innecesarios?",
+          "¿Reporto o corrijo condiciones inseguras antes de que ocurra un incidente?",
+          "¿Promuevo entornos laborales psicológicamente seguros y libres de riesgos?"
+        ]
+      },
+      {
+        id: 66,
+        nombre: "Síntesis y Capacidad Ejecutiva",
+        categoria: "Laboral",
+        definicion: "Habilidad para destilar grandes volúmenes de información en conclusiones clave listas para la acción.",
+        preguntas: [
+          "¿Resumir información extensa en tres o cuatro puntos clave se me da con naturalidad?",
+          "¿Presento reportes ejecutivos claros que permiten tomar decisiones rápidas?",
+          "¿Voy directo al grano en reuniones con directivos o clientes ocupados?"
+        ]
+      },
+      {
+        id: 67,
+        nombre: "Gestión de Recursos",
+        categoria: "Laboral",
+        definicion: "Uso austero, inteligente y transparente de los recursos financieros, materiales y humanos disponibles.",
+        preguntas: [
+          "¿Administro los recursos de la empresa con el mismo cuidado que si fueran propios?",
+          "¿Busco optimizar costos sin sacrificar la calidad ni el bienestar del equipo?",
+          "¿Justifico con claridad el retorno esperado antes de solicitar inversiones o gastos?"
+        ]
+      },
+      {
+        id: 68,
+        nombre: "Colaboración Diversa",
+        categoria: "Laboral",
+        definicion: "Integración productiva del talento de distintas generaciones, culturas y estilos de pensamiento.",
+        preguntas: [
+          "¿Trabajo con fluidez tanto con profesionales muy experimentados como con talento joven?",
+          "¿Aprovecho la diversidad de perfiles en mi equipo como una ventaja creativa?",
+          "¿Adapto mi estilo de colaboración para construir puentes entre personas muy distintas?"
+        ]
+      },
+      {
+        id: 69,
+        nombre: "Ejecución Ágil (Agile)",
+        categoria: "Laboral",
+        definicion: "Entrega iterativa de valor, aprendizaje rápido mediante ciclos cortos y adaptación continua al feedback.",
+        preguntas: [
+          "¿Prefiero lanzar versiones tempranas para validar rápido en lugar de esperar la perfección tardía?",
+          "¿Incorporo retroalimentación frecuente para ajustar el rumbo de mis proyectos?",
+          "¿Trabajo cómodamente en ciclos cortos con metas claras y revisión continua?"
+        ]
+      },
+      {
+        id: 70,
+        nombre: "Gestión del Conocimiento",
+        categoria: "Laboral",
+        definicion: "Documentación y transferencia sistemática de buenas prácticas para que el saber quede en el equipo.",
+        preguntas: [
+          "¿Documento procesos y aprendizajes clave para que otros puedan aprovecharlos fácilmente?",
+          "¿Comparto mis buenas prácticas y herramientas con el resto del equipo?",
+          "¿Busco lecciones aprendidas de proyectos anteriores antes de iniciar uno nuevo?"
+        ]
+      },
+      {
+        id: 71,
+        nombre: "Marca Personal y Profesionalismo",
+        categoria: "Laboral",
+        definicion: "Proyección coherente de excelencia, confiabilidad y reputación positiva en el entorno laboral.",
+        preguntas: [
+          "¿Mi reputación profesional refleja cumplimiento, respeto y alto estándar ético?",
+          "¿Cuido la calidad y presentación de cada comunicación o entregable que lleva mi nombre?",
+          "¿Genero confianza inmediata en clientes, pares y líderes por mi profesionalismo?"
+        ]
+      },
+      {
+        id: 72,
+        nombre: "Visión Sistémica",
+        categoria: "Laboral",
+        definicion: "Comprensión de las interconexiones entre áreas y procesos, evitando soluciones aisladas que afecten el todo.",
+        preguntas: [
+          "¿Evalúo cómo un cambio en mi área puede afectar positiva o negativamente a otras áreas?",
+          "¿Busco soluciones integrales que fortalezcan todo el sistema en lugar de parches locales?",
+          "¿Colaboro con otras áreas para eliminar cuellos de botella transversales?"
+        ]
+      }
+    ];
+
+    // Asignar color neón equilibrado a cada una de las 72 cartas
+    COMPETENCIAS_DATA.forEach((item, index) => {
+      item.neon = NEON_PALETTE[index % NEON_PALETTE.length];
+    });
+
+    // =========================================================================
+    // ESTADO GLOBAL DE LA APLICACIÓN
+    // =========================================================================
+    const appState = {
+      answers: {},         // { [id]: [q0, q1, q2] } donde 2 = Sí, 1 = A veces, 0 = No
+      flipped: {},         // { [id]: boolean }
+      strengths: [],       // Hasta 3 IDs de Fortalezas Impulsoras
+      improvement: null,   // 1 ID de Oportunidad de Mejora
+      activeFilter: 'ALL',
+      gearRotation: 0,
+      isRotating: true,
+      animFrameId: null
+    };
+
+    function loadStorage() {
+      try {
+        const raw = localStorage.getItem('mis_fortalezas_72_v2');
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (parsed.answers) appState.answers = parsed.answers;
+        if (Array.isArray(parsed.strengths)) appState.strengths = parsed.strengths.slice(0, 3);
+        if (parsed.improvement !== undefined) appState.improvement = parsed.improvement;
+        if (parsed.participantName) {
+          document.getElementById('participant-name').value = parsed.participantName;
+        }
+      } catch (err) {
+        console.warn('No se pudo cargar progreso guardado:', err);
+      }
+    }
+
+    function saveStorage() {
+      try {
+        const participantName = document.getElementById('participant-name')?.value || '';
+        localStorage.setItem('mis_fortalezas_72_v2', JSON.stringify({
+          answers: appState.answers,
+          strengths: appState.strengths,
+          improvement: appState.improvement,
+          participantName
+        }));
+      } catch (err) {
+        console.warn('No se pudo guardar progreso:', err);
+      }
+    }
+
+    function notify(htmlText) {
+      const stack = document.getElementById('toast-stack');
+      const el = document.createElement('div');
+      el.className = 'toast-msg';
+      el.innerHTML = htmlText;
+      stack.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(10px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 260);
+      }, 3200);
+    }
+
+    // =========================================================================
+    // CÁLCULO DE SUGERENCIA EN TIEMPO REAL POR CARTA
+    // =========================================================================
+    function getEvaluationSummary(id) {
+      const ans = appState.answers[id] || [null, null, null];
+      const answered = ans.filter(v => v !== null && v !== undefined).length;
+      const totalScore = ans.reduce((sum, v) => sum + (typeof v === 'number' ? v : 0), 0);
+
+      if (answered === 0) {
+        return {
+          answered: 0,
+          text: 'Responde las 3 preguntas para ver orientación',
+          cls: ''
+        };
+      }
+      if (answered < 3) {
+        return {
+          answered,
+          text: `Respondidas ${answered}/3 (${totalScore} pts) — ¡Tú decides!`,
+          cls: ''
+        };
+      }
+      if (totalScore >= 5) {
+        return {
+          answered: 3,
+          text: `✦ Perfil de Fortaleza (${totalScore}/6 pts) • Tú decides`,
+          cls: 'diag-strong'
+        };
+      }
+      if (totalScore >= 3) {
+        return {
+          answered: 3,
+          text: `◈ Competencia en Desarrollo (${totalScore}/6 pts) • Tú decides`,
+          cls: 'diag-mid'
+        };
+      }
+      return {
+        answered: 3,
+        text: `⚙ Sugerida: Oportunidad de Mejora (${totalScore}/6 pts)`,
+        cls: 'diag-weak'
+      };
+    }
+
+    // =========================================================================
+    // ACCIONES DE RESPUESTA, VOLTEO Y PRIORIZACIÓN
+    // =========================================================================
+    function flipCard(id, forceState) {
+      const next = typeof forceState === 'boolean' ? forceState : !appState.flipped[id];
+      appState.flipped[id] = next;
+      const flipper = document.getElementById(`flipper-${id}`);
+      if (flipper) {
+        flipper.classList.toggle('is-flipped', next);
+      }
+    }
+
+    function answerQuestion(id, qIdx, val) {
+      if (!appState.answers[id]) {
+        appState.answers[id] = [null, null, null];
+      }
+      appState.answers[id][qIdx] = val;
+      saveStorage();
+      refreshCardBack(id);
+      refreshCardFrontBadge(id);
+      updateCounters();
+
+      // Si el modal ampliado está abierto para esta carta, actualizarlo también
+      const modal = document.getElementById('zoom-modal');
+      if (modal.classList.contains('open') && modal.dataset.cardId === String(id)) {
+        openZoomModal(id);
+      }
+    }
+
+    function toggleStrength(id) {
+      const idx = appState.strengths.indexOf(id);
+      const comp = COMPETENCIAS_DATA.find(c => c.id === id);
+
+      if (idx !== -1) {
+        appState.strengths.splice(idx, 1);
+        notify(`Retiraste <strong>${comp.nombre}</strong> de tus Fortalezas.`);
+      } else {
+        if (appState.improvement === id) {
+          appState.improvement = null;
+        }
+        if (appState.strengths.length >= 3) {
+          notify(`Ya tienes <strong>3 Fortalezas Impulsoras</strong>. Quita una en el tablero superior para reemplazarla.`);
+          return;
+        }
+        appState.strengths.push(id);
+        notify(`★ <strong>${comp.nombre}</strong> asignada como Fortaleza #${appState.strengths.length}.`);
+      }
+
+      saveStorage();
+      refreshAllUI();
+    }
+
+    function toggleImprovement(id) {
+      const comp = COMPETENCIAS_DATA.find(c => c.id === id);
+
+      if (appState.improvement === id) {
+        appState.improvement = null;
+        notify(`Retiraste <strong>${comp.nombre}</strong> de Oportunidad de Mejora.`);
+      } else {
+        const fIdx = appState.strengths.indexOf(id);
+        if (fIdx !== -1) {
+          appState.strengths.splice(fIdx, 1);
+        }
+        if (appState.improvement !== null && appState.improvement !== id) {
+          const prev = COMPETENCIAS_DATA.find(c => c.id === appState.improvement);
+          notify(`Ya elegiste <strong>${prev.nombre}</strong> como Oportunidad de Mejora. Quítala para cambiarla.`);
+          return;
+        }
+        appState.improvement = id;
+        notify(`⚙ <strong>${comp.nombre}</strong> asignada como Oportunidad de Mejora.`);
+      }
+
+      saveStorage();
+      refreshAllUI();
+    }
+
+    function swapStrengthOrder(index, dir) {
+      const target = index + dir;
+      if (target < 0 || target >= appState.strengths.length) return;
+      const tmp = appState.strengths[index];
+      appState.strengths[index] = appState.strengths[target];
+      appState.strengths[target] = tmp;
+      saveStorage();
+      refreshAllUI();
+    }
+
+    function resetAll() {
+      appState.answers = {};
+      appState.flipped = {};
+      appState.strengths = [];
+      appState.improvement = null;
+      localStorage.removeItem('mis_fortalezas_72_v2');
+      refreshAllUI();
+      notify('Se ha reiniciado toda la baraja y el mapa de engranajes.');
+    }
+
+    // =========================================================================
+    // RENDERIZADO DE LAS 72 CARTAS Y ACTUALIZACIÓN DINÁMICA
+    // =========================================================================
+    function setFilter(filterName) {
+      appState.activeFilter = filterName;
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filterName);
+      });
+      renderCardsGrid();
+    }
+
+    function updateCounters() {
+      const evalCount = COMPETENCIAS_DATA.filter(c => {
+        const a = appState.answers[c.id];
+        return a && a.some(v => v !== null && v !== undefined);
+      }).length;
+      document.getElementById('evaluated-count-label').textContent = `${evalCount} / 72`;
+    }
+
+    function buildFrontBadgeHTML(id) {
+      const sIdx = appState.strengths.indexOf(id);
+      if (sIdx !== -1) {
+        return `<span class="status-tag is-f">★ Fortaleza ${sIdx + 1}</span>`;
+      }
+      if (appState.improvement === id) {
+        return `<span class="status-tag is-m">⚙ Mejora</span>`;
+      }
+      const ev = getEvaluationSummary(id);
+      if (ev.answered > 0) {
+        return `<span class="status-tag is-eval">${ev.answered}/3 resp.</span>`;
+      }
+      return '';
+    }
+
+    function refreshCardFrontBadge(id) {
+      const slot = document.getElementById(`front-badge-${id}`);
+      if (slot) slot.innerHTML = buildFrontBadgeHTML(id);
+    }
+
+    function buildCardBackHTML(comp) {
+      const ans = appState.answers[comp.id] || [null, null, null];
+      const ev = getEvaluationSummary(comp.id);
+      const sIdx = appState.strengths.indexOf(comp.id);
+      const isF = sIdx !== -1;
+      const isM = appState.improvement === comp.id;
+
+      const opts = [
+        { label: 'Sí', val: 2, cls: 'sel-yes' },
+        { label: 'A veces', val: 1, cls: 'sel-mid' },
+        { label: 'No', val: 0, cls: 'sel-no' }
+      ];
+
+      return `
+        <div class="back-header">
+          <div class="back-title" title="${comp.nombre}">#${String(comp.id).padStart(2, '0')} ${comp.nombre}</div>
+          <div class="back-header-actions">
+            <button type="button" class="btn-flip-back" onclick="openZoomModal(${comp.id})" title="Ampliar carta">⤢</button>
+            <button type="button" class="btn-flip-back" onclick="flipCard(${comp.id}, false)">↺ Frente</button>
+          </div>
+        </div>
+
+        <div class="questions-list">
+          ${comp.preguntas.map((q, qi) => `
+            <div class="question-item">
+              <p class="question-text"><span class="question-num">${qi + 1}.</span>${q}</p>
+              <div class="answer-pills">
+                ${opts.map(o => `
+                  <button
+                    type="button"
+                    class="ans-btn ${ans[qi] === o.val ? o.cls : ''}"
+                    onclick="answerQuestion(${comp.id}, ${qi}, ${o.val})"
+                  >${o.label}</button>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div>
+          <div class="diag-bar ${ev.cls}">${ev.text}</div>
+          <div class="priority-actions">
+            <button
+              type="button"
+              class="btn-prio btn-prio-f ${isF ? 'active' : ''}"
+              onclick="toggleStrength(${comp.id})"
+            >${isF ? `✓ Fortaleza #${sIdx + 1}` : '+ Priorizar Fortaleza'}</button>
+
+            <button
+              type="button"
+              class="btn-prio btn-prio-m ${isM ? 'active' : ''}"
+              onclick="toggleImprovement(${comp.id})"
+            >${isM ? '✓ Área de Mejora' : '+ Priorizar Mejora'}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function refreshCardBack(id) {
+      const comp = COMPETENCIAS_DATA.find(c => c.id === id);
+      const backEl = document.getElementById(`card-back-${id}`);
+      if (comp && backEl) {
+        backEl.innerHTML = buildCardBackHTML(comp);
+      }
+    }
+
+    function renderCardsGrid() {
+      const grid = document.getElementById('cards-grid');
+      const query = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
+
+      const filtered = COMPETENCIAS_DATA.filter(comp => {
+        if (appState.activeFilter === 'Ser' && comp.categoria !== 'Ser') return false;
+        if (appState.activeFilter === 'Laboral' && comp.categoria !== 'Laboral') return false;
+        if (appState.activeFilter === 'EVALUATED') {
+          const a = appState.answers[comp.id];
+          if (!a || !a.some(v => v !== null && v !== undefined)) return false;
+        }
+        if (appState.activeFilter === 'SELECTED') {
+          if (!appState.strengths.includes(comp.id) && appState.improvement !== comp.id) return false;
+        }
+        if (query) {
+          const hay = (comp.nombre + ' ' + comp.definicion).toLowerCase();
+          if (!hay.includes(query)) return false;
+        }
+        return true;
+      });
+
+      document.getElementById('grid-count-label').textContent = `Mostrando ${filtered.length} de 72 competencias`;
+      updateCounters();
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px 20px; background: rgba(10, 17, 40, 0.7); border-radius: 20px; border: 1px dashed rgba(148, 163, 184, 0.3);">
+            <p style="font-size: 1.05rem; font-weight: 800; color: #e2e8f0;">No hay competencias que coincidan con tu búsqueda</p>
+            <p style="font-size: 0.82rem; color: #94a3b8; margin-top: 6px;">Prueba limpiando el buscador o seleccionando la pestaña "Todas (72)".</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(comp => {
+        const isFlipped = !!appState.flipped[comp.id];
+        const styleVars = `--card-accent: ${comp.neon.hex}; --card-glow: ${comp.neon.glow}; --card-tint: ${comp.neon.tint};`;
+
+        return `
+          <article class="card-scene" style="${styleVars}">
+            <div class="card-flipper ${isFlipped ? 'is-flipped' : ''}" id="flipper-${comp.id}">
+              
+              <!-- CARA FRONTAL -->
+              <div class="card-face card-front" onclick="flipCard(${comp.id}, true)">
+                <div class="card-top-meta">
+                  <span class="cat-pill">#${String(comp.id).padStart(2, '0')} • ${comp.categoria === 'Ser' ? 'Del Ser' : 'Laboral'}</span>
+                  <div id="front-badge-${comp.id}">${buildFrontBadgeHTML(comp.id)}</div>
+                </div>
+
+                <div class="card-front-body">
+                  <h3 class="card-title">${comp.nombre}</h3>
+                  <p class="card-def">${comp.definicion}</p>
+                </div>
+
+                <div class="card-front-footer">
+                  <span class="flip-hint">↻ Clic para voltear y responder</span>
+                  <button type="button" class="btn-expand-mini" onclick="event.stopPropagation(); openZoomModal(${comp.id})">Ampliar</button>
+                </div>
+              </div>
+
+              <!-- CARA TRASERA -->
+              <div class="card-face card-back" id="card-back-${comp.id}">
+                ${buildCardBackHTML(comp)}
+              </div>
+
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // TABLERO SUPERIOR Y BARRA LATERAL DEL MAPA DE ENGRANAJES
+    // =========================================================================
+    function renderPriorityPanels() {
+      const headerSlots = document.getElementById('header-slots');
+      const sidebarStrengths = document.getElementById('sidebar-strengths-list');
+      const sidebarImp = document.getElementById('sidebar-improvement-box');
+      const jumpBtn = document.getElementById('btn-jump-gears');
+
+      // 1. Ranuras en cabecera
+      let headerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const id = appState.strengths[i];
+        if (id) {
+          const c = COMPETENCIAS_DATA.find(x => x.id === id);
+          headerHTML += `
+            <div class="slot-pill filled-f" title="${c.nombre}">
+              <span class="slot-badge-num">${i + 1}</span>
+              <span class="slot-text">${c.nombre}</span>
+              <button type="button" class="slot-remove" onclick="toggleStrength(${id})" aria-label="Quitar">✕</button>
+            </div>
+          `;
+        } else {
+          headerHTML += `
+            <div class="slot-pill empty-f">
+              <span class="slot-badge-num">${i + 1}</span>
+              <span>Fortaleza ${i + 1}</span>
+            </div>
+          `;
+        }
+      }
+
+      if (appState.improvement) {
+        const imp = COMPETENCIAS_DATA.find(x => x.id === appState.improvement);
+        headerHTML += `
+          <div class="slot-pill filled-m" title="${imp.nombre}">
+            <span class="slot-badge-num">⚙</span>
+            <span class="slot-text">${imp.nombre}</span>
+            <button type="button" class="slot-remove" onclick="toggleImprovement(${imp.id})" aria-label="Quitar">✕</button>
+          </div>
+        `;
+      } else {
+        headerHTML += `
+          <div class="slot-pill empty-m">
+            <span class="slot-badge-num">⚙</span>
+            <span>Área de Mejora</span>
+          </div>
+        `;
+      }
+
+      headerSlots.innerHTML = headerHTML;
+
+      // Estado visual del botón Generar Sistema de Engranajes
+      const count = appState.strengths.length + (appState.improvement ? 1 : 0);
+      const isComplete = appState.strengths.length === 3 && appState.improvement !== null;
+      jumpBtn.classList.toggle('ready', isComplete);
+      jumpBtn.innerHTML = isComplete
+        ? `<span>⚙ Ver Sistema de Engranajes (4/4) ✦</span>`
+        : `<span>⚙ Mapa de Engranajes (${count}/4)</span>`;
+
+      // 2. Lista lateral de 3 Fortalezas en la sección de Engranajes
+      const gearColors = ['#00f5d4', '#00ff87', '#fee440'];
+      let sideFHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const id = appState.strengths[i];
+        if (id) {
+          const c = COMPETENCIAS_DATA.find(x => x.id === id);
+          sideFHTML += `
+            <div class="order-item">
+              <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+                <span class="order-dot" style="background:${gearColors[i]}">${i + 1}</span>
+                <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${c.nombre}</span>
+              </div>
+              <div class="order-btns">
+                <button type="button" onclick="swapStrengthOrder(${i}, -1)" ${i === 0 ? 'disabled' : ''} title="Subir">↑</button>
+                <button type="button" onclick="swapStrengthOrder(${i}, 1)" ${i === 2 || !appState.strengths[i + 1] ? 'disabled' : ''} title="Bajar">↓</button>
+                <button type="button" onclick="toggleStrength(${id})" style="color:#fda4af;" title="Quitar">✕</button>
+              </div>
+            </div>
+          `;
+        } else {
+          sideFHTML += `
+            <div class="order-item" style="opacity:0.55; border-style:dashed;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="order-dot" style="background:#334155; color:#94a3b8;">${i + 1}</span>
+                <span>Sin asignar aún</span>
+              </div>
+            </div>
+          `;
+        }
+      }
+      sidebarStrengths.innerHTML = sideFHTML;
+
+      // 3. Caja lateral de Oportunidad de Mejora
+      if (appState.improvement) {
+        const imp = COMPETENCIAS_DATA.find(x => x.id === appState.improvement);
+        sidebarImp.innerHTML = `
+          <div class="order-item" style="border-color: rgba(255, 0, 127, 0.55); margin-bottom:0;">
+            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+              <span class="order-dot" style="background:#ff007f; color:#fff;">⚙</span>
+              <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${imp.nombre}</span>
+            </div>
+            <div class="order-btns">
+              <button type="button" onclick="toggleImprovement(${imp.id})" style="color:#fda4af;" title="Quitar">✕</button>
+            </div>
+          </div>
+        `;
+      } else {
+        sidebarImp.innerHTML = `
+          <div class="order-item" style="opacity:0.55; border-style:dashed; margin-bottom:0;">
+            <span>Elige 1 carta como Oportunidad de Mejora</span>
+          </div>
+        `;
+      }
+    }
+
+    function scrollToGearsSection() {
+      const sec = document.getElementById('gears-section');
+      if (sec) {
+        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (appState.strengths.length < 3 || appState.improvement === null) {
+        notify('Tip: Completa tus <strong>3 Fortalezas</strong> y <strong>1 Oportunidad de Mejora</strong> para llenar los 4 engranajes.');
+      }
+    }
+
+    // =========================================================================
+    // MODAL DE VISTA AMPLIADA DE CARTA
+    // =========================================================================
+    function openZoomModal(id) {
+      const comp = COMPETENCIAS_DATA.find(c => c.id === id);
+      if (!comp) return;
+      const modal = document.getElementById('zoom-modal');
+      const box = document.getElementById('zoom-modal-content');
+      modal.dataset.cardId = String(id);
+      box.style.borderColor = comp.neon.hex;
+      box.style.boxShadow = `0 0 45px ${comp.neon.glow}`;
+
+      const ans = appState.answers[id] || [null, null, null];
+      const ev = getEvaluationSummary(id);
+      const sIdx = appState.strengths.indexOf(id);
+      const isF = sIdx !== -1;
+      const isM = appState.improvement === id;
+
+      const opts = [
+        { label: 'Sí', val: 2, cls: 'sel-yes' },
+        { label: 'A veces', val: 1, cls: 'sel-mid' },
+        { label: 'No', val: 0, cls: 'sel-no' }
+      ];
+
+      box.innerHTML = `
+        <button type="button" class="modal-close" onclick="closeZoomModal()" aria-label="Cerrar">✕</button>
+        <span class="cat-pill" style="background:${comp.neon.tint}; color:${comp.neon.hex}; border-color:${comp.neon.hex};">
+          #${String(comp.id).padStart(2, '0')} • Competencia ${comp.categoria === 'Ser' ? 'Del Ser' : 'Laboral'}
+        </span>
+        <h3 style="font-size:1.65rem; font-weight:900; color:${comp.neon.hex}; margin: 12px 0 8px;">${comp.nombre}</h3>
+        <p style="font-size:0.94rem; color:#e2e8f0; margin-bottom:16px; line-height:1.55;">${comp.definicion}</p>
+
+        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
+          ${comp.preguntas.map((q, qi) => `
+            <div class="question-item" style="padding:11px 13px;">
+              <p class="question-text" style="font-size:0.86rem; margin-bottom:8px;">
+                <span class="question-num" style="color:${comp.neon.hex};">${qi + 1}.</span>${q}
+              </p>
+              <div class="answer-pills">
+                ${opts.map(o => `
+                  <button
+                    type="button"
+                    class="ans-btn ${ans[qi] === o.val ? o.cls : ''}"
+                    style="padding:7px; font-size:0.8rem;"
+                    onclick="answerQuestion(${comp.id}, ${qi}, ${o.val})"
+                  >${o.label}</button>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="diag-bar ${ev.cls}" style="padding:8px 12px; font-size:0.8rem; margin-bottom:12px;">${ev.text}</div>
+
+        <div class="priority-actions" style="gap:10px;">
+          <button
+            type="button"
+            class="btn-prio btn-prio-f ${isF ? 'active' : ''}"
+            style="padding:11px; font-size:0.82rem;"
+            onclick="toggleStrength(${comp.id}); openZoomModal(${comp.id});"
+          >${isF ? `✓ Fortaleza #${sIdx + 1} (Quitar)` : '+ Priorizar como Fortaleza'}</button>
+
+          <button
+            type="button"
+            class="btn-prio btn-prio-m ${isM ? 'active' : ''}"
+            style="padding:11px; font-size:0.82rem;"
+            onclick="toggleImprovement(${comp.id}); openZoomModal(${comp.id});"
+          >${isM ? '✓ Área de Mejora (Quitar)' : '+ Priorizar como Mejora'}</button>
+        </div>
+      `;
+
+      modal.classList.add('open');
+    }
+
+    function closeZoomModal() {
+      document.getElementById('zoom-modal').classList.remove('open');
+    }
+
+    // =========================================================================
+    // MOTOR GRÁFICO HTML5 CANVAS: SISTEMA DE 4 ENGRANAJES CONECTADOS + PNG
+    // =========================================================================
+    function wrapTextLines(ctx, text, maxWidth) {
+      const words = text.split(' ');
+      const lines = [];
+      let current = words[0] || '';
+      for (let i = 1; i < words.length; i++) {
+        const test = current + ' ' + words[i];
+        if (ctx.measureText(test).width <= maxWidth) {
+          current = test;
+        } else {
+          lines.push(current);
+          current = words[i];
+        }
+      }
+      lines.push(current);
+      return lines;
+    }
+
+    // Dibuja un engranaje dentado con precisión geométrica, radios interiores, brillo neón y texto fijo centrado
+    function drawPrecisionGear(ctx, cfg) {
+      const { x, y, outerR, innerR, coreR, teeth, angle, color, topLabel, mainTitle, subCategory } = cfg;
+
+      ctx.save();
+      ctx.translate(x, y);
+
+      // Resplandor radial ambiental
+      const halo = ctx.createRadialGradient(0, 0, coreR * 0.5, 0, 0, outerR * 1.28);
+      halo.addColorStop(0, color + '30');
+      halo.addColorStop(1, 'rgba(6, 11, 25, 0)');
+      ctx.fillStyle = halo;
+      ctx.beginPath();
+      ctx.arc(0, 0, outerR * 1.28, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cuerpo dentado rotatorio
+      ctx.save();
+      ctx.rotate(angle);
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 18;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.fillStyle = '#0c1738';
+
+      const step = (Math.PI * 2) / teeth;
+      ctx.beginPath();
+      for (let i = 0; i < teeth; i++) {
+        const a0 = i * step;
+        const a1 = a0 + step * 0.16;
+        const a2 = a0 + step * 0.30;
+        const a3 = a0 + step * 0.70;
+        const a4 = a0 + step * 0.84;
+
+        if (i === 0) ctx.moveTo(Math.cos(a0) * innerR, Math.sin(a0) * innerR);
+        else ctx.lineTo(Math.cos(a0) * innerR, Math.sin(a0) * innerR);
+
+        ctx.lineTo(Math.cos(a1) * innerR, Math.sin(a1) * innerR);
+        ctx.lineTo(Math.cos(a2) * outerR, Math.sin(a2) * outerR);
+        ctx.lineTo(Math.cos(a3) * outerR, Math.sin(a3) * outerR);
+        ctx.lineTo(Math.cos(a4) * innerR, Math.sin(a4) * innerR);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Anillo estructural interno y 6 radios
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(0, 0, innerR * 0.84, 0, Math.PI * 2);
+      ctx.strokeStyle = color + '77';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      for (let r = 0; r < 6; r++) {
+        const ra = (r * Math.PI) / 3;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(ra) * coreR, Math.sin(ra) * coreR);
+        ctx.lineTo(Math.cos(ra) * (innerR * 0.84), Math.sin(ra) * (innerR * 0.84));
+        ctx.strokeStyle = color + '45';
+        ctx.lineWidth = 4.5;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Núcleo central fijo para lectura perfecta del nombre
+      const coreGrad = ctx.createRadialGradient(0, -14, 8, 0, 0, coreR);
+      coreGrad.addColorStop(0, '#122252');
+      coreGrad.addColorStop(1, '#060c1f');
+      ctx.fillStyle = coreGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, coreR, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = color;
+      ctx.stroke();
+
+      // Etiqueta superior ("FORTALEZA 1", etc.)
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = color;
+      ctx.font = '800 11px system-ui, -apple-system, sans-serif';
+      ctx.fillText(topLabel, 0, -coreR * 0.54);
+
+      // Nombre de la competencia centrado y ajustado
+      ctx.fillStyle = '#ffffff';
+      const fontSize = coreR >= 110 ? 19 : 15;
+      ctx.font = `800 ${fontSize}px system-ui, -apple-system, sans-serif`;
+      const lines = wrapTextLines(ctx, mainTitle, coreR * 1.62).slice(0, 3);
+      const lineH = fontSize * 1.22;
+      const startY = -((lines.length - 1) * lineH) / 2 + 3;
+      lines.forEach((line, idx) => {
+        ctx.fillText(line, 0, startY + idx * lineH);
+      });
+
+      // Subcategoría inferior
+      if (subCategory) {
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 11px system-ui, -apple-system, sans-serif';
+        ctx.fillText(subCategory, 0, coreR * 0.62);
+      }
+
+      ctx.restore();
+    }
+
+    // Dibuja flechas dinámicas de transmisión de impulso desde las fortalezas hacia la mejora
+    function drawEnergyFlowArrow(ctx, x1, y1, x2, y2, curveOffsetY, color) {
+      ctx.save();
+      const cx = (x1 + x2) / 2;
+      const cy = (y1 + y2) / 2 + curveOffsetY;
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.setLineDash([8, 6]);
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 10;
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.quadraticCurveTo(cx, cy, x2, y2);
+      ctx.stroke();
+
+      // Punta de flecha en el extremo final
+      const angle = Math.atan2(y2 - cy, x2 - cx);
+      ctx.setLineDash([]);
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - 13 * Math.cos(angle - Math.PI / 6), y2 - 13 * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(x2 - 13 * Math.cos(angle + Math.PI / 6), y2 - 13 * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function renderGearsCanvas() {
+      const canvas = document.getElementById('gears-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;  // 1200
+      const H = canvas.height; // 800
+
+      const f1 = COMPETENCIAS_DATA.find(c => c.id === appState.strengths[0]);
+      const f2 = COMPETENCIAS_DATA.find(c => c.id === appState.strengths[1]);
+      const f3 = COMPETENCIAS_DATA.find(c => c.id === appState.strengths[2]);
+      const imp = COMPETENCIAS_DATA.find(c => c.id === appState.improvement);
+      const participant = (document.getElementById('participant-name')?.value || '').trim();
+
+      // 1. Fondo azul oscuro profundo con degradado radial
+      const bg = ctx.createRadialGradient(W * 0.5, H * 0.45, 80, W * 0.5, H * 0.5, W * 0.75);
+      bg.addColorStop(0, '#0b1636');
+      bg.addColorStop(0.55, '#070e24');
+      bg.addColorStop(1, '#040814');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      // Cuadrícula sutil de precisión
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx <= W; gx += 40) {
+        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
+      }
+      for (let gy = 0; gy <= H; gy += 40) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+      }
+
+      // Marco neón exterior
+      ctx.strokeStyle = 'rgba(0, 245, 212, 0.35)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(18, 18, W - 36, H - 36);
+
+      // 2. Cabecera del gráfico
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#00f5d4';
+      ctx.font = '900 30px system-ui, -apple-system, sans-serif';
+      ctx.fillText('MIS FORTALEZAS - MAPA DE IMPULSO', 44, 62);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '500 14px system-ui, -apple-system, sans-serif';
+      ctx.fillText('Mis 3 fortalezas principales engranan e impulsan mi oportunidad de mejora', 44, 86);
+
+      if (participant) {
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 20px system-ui, -apple-system, sans-serif';
+        ctx.fillText(participant, W - 44, 62);
+        ctx.fillStyle = '#fee440';
+        ctx.font = '700 12px system-ui, -apple-system, sans-serif';
+        ctx.fillText('PERFIL DE COMPETENCIAS', W - 44, 84);
+      }
+
+      // 3. Posiciones de los 4 engranajes físicamente engranados entre sí
+      // Fortaleza 1 (arriba izq) + Fortaleza 3 (abajo izq) engranan con Fortaleza 2 (centro),
+      // y las 3 transmiten su torque hacia el Gran Engranaje de Oportunidad de Mejora (derecha).
+      const gF1  = { x: 245, y: 245, outerR: 114, innerR: 98,  coreR: 76,  teeth: 16, color: '#00f5d4' };
+      const gF2  = { x: 482, y: 365, outerR: 126, innerR: 109, coreR: 85,  teeth: 18, color: '#00ff87' };
+      const gF3  = { x: 245, y: 495, outerR: 114, innerR: 98,  coreR: 76,  teeth: 16, color: '#fee440' };
+      const gImp = { x: 825, y: 365, outerR: 168, innerR: 147, coreR: 115, teeth: 22, color: '#ff007f' };
+
+      // Flechas de transmisión de energía desde las 3 fortalezas hacia la tuerca de mejora
+      drawEnergyFlowArrow(ctx, gF1.x + 112, gF1.y - 10, gImp.x - 155, gImp.y - 82, -32, '#00f5d4');
+      drawEnergyFlowArrow(ctx, gF2.x + 124, gF2.y,      gImp.x - 166, gImp.y,        0, '#00ff87');
+      drawEnergyFlowArrow(ctx, gF3.x + 112, gF3.y + 10, gImp.x - 155, gImp.y + 82,  32, '#fee440');
+
+      // Etiquetas de zona en la parte superior del diagrama
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#00ff87';
+      ctx.font = '800 12px system-ui, -apple-system, sans-serif';
+      ctx.fillText('⚡ ENGRANAJES IMPULSORES (FORTALEZAS)', 360, 118);
+
+      ctx.fillStyle = '#ff007f';
+      ctx.fillText('🎯 ENGRANAJE IMPULSADO (MEJORA)', gImp.x, 156);
+
+      // Rotación engranada (sentidos alternos sincronizados por relación de dientes)
+      const a = appState.gearRotation;
+      drawPrecisionGear(ctx, {
+        ...gF1,
+        angle: a,
+        topLabel: 'FORTALEZA 1',
+        mainTitle: f1 ? f1.nombre : 'Selecciona Fortaleza 1',
+        subCategory: f1 ? `Competencia ${f1.categoria === 'Ser' ? 'del Ser' : 'Laboral'}` : 'Pendiente'
+      });
+
+      drawPrecisionGear(ctx, {
+        ...gF2,
+        angle: -a * (16 / 18) + 0.17,
+        topLabel: 'FORTALEZA 2',
+        mainTitle: f2 ? f2.nombre : 'Selecciona Fortaleza 2',
+        subCategory: f2 ? `Competencia ${f2.categoria === 'Ser' ? 'del Ser' : 'Laboral'}` : 'Pendiente'
+      });
+
+      drawPrecisionGear(ctx, {
+        ...gF3,
+        angle: a + 0.22,
+        topLabel: 'FORTALEZA 3',
+        mainTitle: f3 ? f3.nombre : 'Selecciona Fortaleza 3',
+        subCategory: f3 ? `Competencia ${f3.categoria === 'Ser' ? 'del Ser' : 'Laboral'}` : 'Pendiente'
+      });
+
+      drawPrecisionGear(ctx, {
+        ...gImp,
+        angle: a * (18 / 22) + 0.08,
+        topLabel: 'OPORTUNIDAD DE MEJORA',
+        mainTitle: imp ? imp.nombre : 'Selecciona Área de Mejora',
+        subCategory: imp ? `Competencia ${imp.categoria === 'Ser' ? 'del Ser' : 'Laboral'}` : 'Pendiente'
+      });
+
+      // 4. Pie resumen inferior con las 4 tarjetas seleccionadas
+      const boxY = 640;
+      const boxH = 122;
+      const boxW = 264;
+      const boxGap = 18;
+      const startX = 45;
+
+      const footerCards = [
+        { tag: 'FORTALEZA 1', comp: f1, color: '#00f5d4' },
+        { tag: 'FORTALEZA 2', comp: f2, color: '#00ff87' },
+        { tag: 'FORTALEZA 3', comp: f3, color: '#fee440' },
+        { tag: 'OPORTUNIDAD DE MEJORA', comp: imp, color: '#ff007f' }
+      ];
+
+      footerCards.forEach((fc, idx) => {
+        const bx = startX + idx * (boxW + boxGap);
+        ctx.save();
+        ctx.fillStyle = 'rgba(10, 17, 40, 0.92)';
+        ctx.strokeStyle = fc.color + '88';
+        ctx.lineWidth = 1.8;
+
+        // Rectángulo redondeado
+        const rad = 12;
+        ctx.beginPath();
+        ctx.moveTo(bx + rad, boxY);
+        ctx.lineTo(bx + boxW - rad, boxY);
+        ctx.quadraticCurveTo(bx + boxW, boxY, bx + boxW, boxY + rad);
+        ctx.lineTo(bx + boxW, boxY + boxH - rad);
+        ctx.quadraticCurveTo(bx + boxW, boxY + boxH, bx + boxW - rad, boxY + boxH);
+        ctx.lineTo(bx + rad, boxY + boxH);
+        ctx.quadraticCurveTo(bx, boxY + boxH, bx, boxY + boxH - rad);
+        ctx.lineTo(bx, boxY + rad);
+        ctx.quadraticCurveTo(bx, boxY, bx + rad, boxY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.textAlign = 'left';
+        ctx.fillStyle = fc.color;
+        ctx.font = '800 10px system-ui, -apple-system, sans-serif';
+        ctx.fillText(fc.tag, bx + 13, boxY + 20);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 14px system-ui, -apple-system, sans-serif';
+        const titleText = fc.comp ? fc.comp.nombre : 'Sin seleccionar';
+        const tLines = wrapTextLines(ctx, titleText, boxW - 26);
+        ctx.fillText(tLines[0], bx + 13, boxY + 40);
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '400 11px system-ui, -apple-system, sans-serif';
+        const defText = fc.comp ? fc.comp.definicion : 'Voltea una carta de la baraja y asígnala a este espacio.';
+        const dLines = wrapTextLines(ctx, defText, boxW - 26).slice(0, 3);
+        dLines.forEach((dl, li) => {
+          ctx.fillText(dl, bx + 13, boxY + 62 + li * 16);
+        });
+
+        ctx.restore();
+      });
+
+      // 5. Crédito institucional en la base del lienzo PNG
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#64748b';
+      ctx.font = '600 11px system-ui, -apple-system, sans-serif';
+      ctx.fillText(
+        'Elaborado por: Yury Marcela Galvis Parra. SENA Regional Santander. Centro de Servicios Empresariales y Turísticos.',
+        W / 2,
+        H - 22
+      );
+      ctx.restore();
+    }
+
+    function startGearsLoop() {
+      function tick() {
+        if (appState.isRotating) {
+          appState.gearRotation += 0.0055;
+          renderGearsCanvas();
+        }
+        appState.animFrameId = requestAnimationFrame(tick);
+      }
+      if (appState.animFrameId) {
+        cancelAnimationFrame(appState.animFrameId);
+      }
+      renderGearsCanvas();
+      appState.animFrameId = requestAnimationFrame(tick);
+    }
+
+    function toggleGearsRotation() {
+      appState.isRotating = !appState.isRotating;
+      const btn = document.getElementById('btn-toggle-rotation');
+      if (btn) {
+        btn.textContent = appState.isRotating ? '⏸ Pausar giro' : '▶ Reanudar giro';
+      }
+    }
+
+    function downloadGearsPNG() {
+      try {
+        renderGearsCanvas();
+        const canvas = document.getElementById('gears-canvas');
+        const link = document.createElement('a');
+        const rawName = (document.getElementById('participant-name')?.value || '').trim();
+        const safeName = rawName
+          ? rawName.toLowerCase().replace(/[^a-z0-9áéíóúñ]+/gi, '_')
+          : 'participante';
+        link.download = `mis_fortalezas_${safeName}.png`;
+        link.href = canvas.toDataURL('image/png');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        notify('Imagen PNG de <strong>Mis Fortalezas</strong> descargada correctamente.');
+      } catch (err) {
+        console.error('Error al generar PNG:', err);
+        notify('Ocurrió un inconveniente al exportar la imagen PNG.');
+      }
+    }
+
+    function refreshAllUI() {
+      renderCardsGrid();
+      renderPriorityPanels();
+      renderGearsCanvas();
+    }
+
+    // =========================================================================
+    // INICIALIZACIÓN DE LA APLICACIÓN
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStorage();
+
+      const nameInput = document.getElementById('participant-name');
+      if (nameInput) {
+        nameInput.addEventListener('input', () => {
+          saveStorage();
+          renderGearsCanvas();
+        });
+      }
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeZoomModal();
+        }
+      });
+
+      refreshAllUI();
+      startGearsLoop();
+    });
+  </script>
+
+  <!-- MODAL DE VISTA AMPLIADA DE CARTA -->
+  <div id="zoom-modal" class="modal-backdrop" onclick="if (event.target === this) closeZoomModal()">
+    <div id="zoom-modal-content" class="modal-card-box"></div>
+  </div>
+
+  <!-- PILA DE NOTIFICACIONES TOAST -->
+  <div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+</body>
+</html>
